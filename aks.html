@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<!-- Information visualization Assignment 2 
+Code developed by Pradeep Vaga, Stuent ID:17200362
+and Akshaya Gasrsund, Student ID:17200258
+-->
+
+<html lang="en" class="tas-com">
+<!--button id="start">Start</button-->
+<html lang="en" class="tas-com">
+
+<head>
+    <meta charset="utf-8">
+    <title>Channeling Hans!</title>
+    <link href="./themes/prism.css" rel="stylesheet" />
+    <link href="./themes/tas_style.css" rel="stylesheet" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="./lib/prism.js" charset="utf-8"></script>
+    <style type="text/css">
+		
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: darkgray;
+            stroke-width: 1.5px;
+        }
+
+        /*CSS properties for the Year Text Floating on the graph*/
+
+        .year {
+            font-size: 150px;
+            font-family: cursive;
+            font-variant-numeric: proportional-nums;
+            opacity: 0.4
+        }
+
+        .grid line {
+            stroke: lightgrey;
+            stroke-opacity: 0.7;
+            shape-rendering: crispEdges;
+        }
+
+        .slider {
+            flex-grow: 1;
+            cursor: pointer;
+            
+        }
+        .legend {
+            float: middle;
+            margin-bottom: 20px;
+			margin-left:70px;
+            height: 0;
+			padding:15px;
+            padding-bottom: 5px;
+            border-radius: 5;
+            border: 10px solid #0B2C7E;
+            overflow: hidden;
+            background: #abc0ff;
+            box-shadow: 0 0 3px gray;
+        }
+        .axis text {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11px;
+        }
+
+        #play-button {
+            position: absolute;
+            background: #29ad51;
+            
+            color: white;
+            margin-left: 11%;
+            margin-bottom: 5%;
+            padding: 0 12px;
+            width: 60px;
+            cursor: pointer;
+            height: 30px;
+        }
+		#reset-button {
+            position: absolute;
+            background: #29ad51;
+            color: white;
+            margin-left: 2.5%;
+            margin-bottom: 5%;
+            padding: 0 12px;
+            width: 120px;
+            cursor: pointer;
+            height: 30px;
+        }
+        
+		
+    </style>
+</head>
+
+<body style="background-color:#f0f8ff ">
+    <h1><center>Information Visualization - Assignment 2</center></h1>
+	<br />
+    <div>
+        <label for="year" style="margin-left: 2.5%">Select country to see its trace:</label>
+        <select Id = "country">Please select country to see the path</select>
+    </div>
+	<br />
+	<div>
+		<button type="submit"  id="reset-button"  border-color:unset;  ">Reset Regions</button>
+        <!--<input type="range" min=1900 max=2015 step=1 id="year" value=1900 oninput="selected_year.value = year.value" style="width: 500px">-->
+        <button id="play-button">Play</button>
+		
+        <input type="range" min="1900" max="2015" value=1900 class="slider" oninput="selected_year.value = year.value" id="year" style="width: 450px; margin-left: 15.5%">
+		
+        
+    </div>
+    
+    <!--Organizing the layout using table-->
+    <table border="0">
+        <tr>
+            <td rowspan="2"><div id="bubble_chart"></div></td>
+			<td rowspan="2"> 
+			
+			
+				<div class="legend" style="display: table;">
+					<div class="blank" style="display: table-row; ">
+						Click Legend 
+						<br>
+					</div>
+					
+					 
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Asia" style="background-color:#ffd230; border-color:unset; width: 30px;height: 30px;" id="leg_asia" onclick="legend(value)" ;>
+
+						</button> Asia
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Europe" style="background-color:#a530ff; border-color:unset;width: 30px;height: 30px;" id="leg_eu" onclick="legend(value)" ;>
+
+						</button> Europe
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Africa" style="background-color:#ff308a; border-color:unset; width: 30px;height: 30px;" id="leg_af" onclick="legend(value)" ;>
+
+						</button> Africa
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="North America" style="background-color:#8aff30; border-color:unset;width: 30px;height: 30px;" id="leg_am" onclick="legend(value)" ;>
+
+						</button> North America
+					</div>	
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="South America" style="background-color:#ff6b2b; border-color:unset; width: 30px;height: 30px;" id="leg_asia" onclick="legend(value)" ;>
+
+						</button> South America
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Australia" style="background-color:#2bd5ff; border-color:unset;width: 30px;height: 30px;" id="leg_eu" onclick="legend(value)" ;>
+
+						</button> Australia
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Central America" style="background-color:#054cff; border-color:unset; width: 30px;height: 30px;" id="leg_af" onclick="legend(value)" ;>
+
+						</button> Central America
+					</div>
+					<div class="leg" style="display: table-row;">
+						<button type="submit" value="Oceania" style="background-color:#A9A9A9; border-color:unset;width: 30px;height: 30px;" id="leg_am" onclick="legend(value)" ;>
+
+						</button> Oceania
+					</div>				
+				</div>
+			</td>
+			
+            <td><div id="barchart1" ></div></td>
+            </tr><tr>
+            <td><div id="barchart2" ></div></td>
+        </tr>
+    </table>
+  
+    </div>
+    
+    <div>
+        <script type="text/javascript">
+            //Defining global variables
+            var dataset;
+            // Define margins for bubble chart
+            var margin = {
+                top: 20,
+                right: 10,
+                bottom: 35,
+                left: 35
+            };
+			// Define margins for bubbar charts
+			var margin_bars = {
+                top: 20,
+                right: 10,
+                bottom: 30,
+                left: 170
+            };
+            var playAnimation;
+            //Width and height of bubble chart canvas
+            var outer_width = 700;            
+            var outer_height = 500;
+			var svg_width = outer_width - margin.left - margin.right;
+			var svg_height = outer_height - margin.top - margin.bottom;
+			
+			//Width and height of bar charts canvas
+			var outer_width_bar = 450;
+			var outer_height_bar = 250;            
+            var svg_width_bar = outer_width_bar - margin_bars.left - margin_bars.right;            
+			var svg_height_bar = outer_height_bar - margin_bars.top - margin_bars.bottom;
+            
+			var maxPopulation, minPopulation, maxGDP, minGDP;
+            var yScale, xScale, rScale, xAxis, yAxis, color;
+            var yScaleBar, xScaleBar, yAxisBar, xAxisBar, xScaleBar1, xAxisBar;
+			
+			var moving = false;
+            var display_year = 1900;
+            var filtered_dataset;
+			var timer;
+			
+			//displaying bubble chart		
+            var svg = d3.select("#bubble_chart")
+                .append("svg")
+                .attr("width", svg_width + margin.left + margin.right)
+                .attr("height", svg_height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			          
+            // displaying bar chart 1			
+            var svg_bar1 = d3.select("#barchart1")
+                .append("svg")
+                .attr("width", svg_width_bar + margin_bars.left + margin_bars.right)
+                .attr("height", 280)
+                .append("g")
+                .attr("transform", "translate(" + margin_bars.left + "," + margin_bars.top + ")")
+                .attr("class", "chart");
+               
+           // displaying bar chart 2
+            var svg_bar2 = d3.select("#barchart2")
+                .append("svg")
+                .attr("width", svg_width_bar     + margin_bars.left + margin_bars.right)
+                .attr("height", 280)
+                .append("g")
+                .attr("transform", "translate(" + margin_bars.left + "," + margin_bars.top + ")")
+            
+            
+			regionSelect = '';
+    
+			/* Function for filtering Dataset which is already filtered by year, 
+			   further by region passed by the legend()*/
+			function regionFilter(value) {
+				if (regionSelect == '')
+					return value;
+				else
+					s = value.Region;
+				return (s.includes(regionSelect));
+			}
+			
+			// Function which copies value into regionSelect variable which inturn filters data by region
+			function legend(value) {
+				regionSelect = value;
+				filtered_dataset = dataset.filter(yearFilter);
+				filtered_dataset = filtered_dataset.filter(regionFilter);
+				generateVisualization();
+                generateBarCharts();
+			}
+			
+            // define a function that filters data by year
+            function yearFilter(value) {
+                return (value.Year == display_year)
+            }
+
+           //function to intialize global variables
+            function initialiseGlobalVariables() {
+                dataset.forEach(function(d) {
+                    d.Population = +d.Population;
+                });
+                dataset.forEach(function(d) {
+                    d.GDP = +d.GDP;
+                });
+                dataset.forEach(function(d) {
+                    d.LifeExp = +d.LifeExp;
+                });
+                maxPopulation = d3.max(dataset, function(d) {
+                    return d.Population;
+                });
+                minPopulation = d3.min(dataset, function(d) {
+                    return d.Population;
+                });
+                maxGDP = d3.max(dataset, function(d) {
+                    return d.GDP;
+                });
+                minGDP = d3.min(dataset, function(d) {
+                    return d.GDP;
+                });
+                /*-----------------------Bubble Chart------------------------*/
+				// Create a scale to scale Life expectany values
+                yScale = d3.scaleLinear()
+                    .domain([0, 90])
+                    .range([svg_height, 0]);
+                // Log scale is required for x axis as the Income range varies from $200 to $180000
+                xScale = d3.scaleLog()
+                    .domain([minGDP, maxGDP])
+                    .range([0, svg_width]);	
+				//scaling bubble radius 
+                rScale = d3.scaleLinear()
+                    .domain([minPopulation, maxPopulation])
+                    .range([3, 70]);
+                // Create an x-axis connected to the x scale
+                xAxis = d3.axisBottom()
+                    .scale(xScale)
+                    .ticks(7, d3.format(",d"));
+				//Label for x axis	
+                svg.append("text")
+                    .attr("x", svg_width / 2.5 + margin.left)
+                    .attr("y", svg_height + margin.bottom - 3)
+                    .style("text-anchor", "middle")
+                    .attr("font-family", "serif")
+                    .text("Income per person in US Dollars")
+                    .attr("opacity", 0.8);
+				// Create an y-axis connected to the y scale
+                yAxis = d3.axisLeft()
+                    .scale(yScale)
+                    .ticks(5);
+                //label for Y axis
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - margin.left)
+                    .attr("x", 0 - (svg_height / 2))
+                    .attr("dy", "0.7em")
+                    .attr("opacity", 0.8)
+                    .attr("font-family", "serif")
+                    .style("text-anchor", "middle")
+                    .text("Life expectancy in years");
+                //bringing x axis to bottom position
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform", "translate(0," + svg_height + ")")
+                    .call(xAxis);
+                //calling y axis
+                svg.append("g")
+                    .attr("class", "axis")
+                    .call(yAxis);
+				//displaying year in the background of bubble chart
+                svg.append("text")
+                    .attr("y", svg_height / 1.8)
+                    .attr("x", svg_width / 2)
+                    .style("text-anchor", "middle")
+                    .attr("id", "year_value")
+                    .attr("class", "year")
+                    .attr("opacity", 0.4)
+                    .text(display_year);
+				// colour code for countries and the legend
+                color = d3.scaleOrdinal()
+                    .domain(["Asia", "Europe", "Africa", "North America", "South America", "Australia", "Central America","Oceania" ])
+                    .range(["#ffd230", "#a530ff", "#ff308a", "#8aff30", "#ff6b2b", "#2bd5ff", "#054cff","#A9A9A9"]);
+					
+				/*----------------------Bar Chart 1--------------------*/
+                //Bar chart 1 scaling and axis
+                yScaleBarChart1 = d3.scaleBand()
+					.range([0, svg_height_bar])
+					.paddingInner(0.3)
+					.paddingOuter(0.3);
+				
+				//Scaling X axis
+				xScaleBarChart1 = d3.scaleLinear()
+                     .range([0, svg_width_bar]);
+					 
+				// Scaling Y axis
+                yAxisBarChart1 = d3.axisLeft()
+                  .scale(yScaleBarChart1);
+
+				//Naming on yaxis chart 1
+				svg_bar1.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - 120)
+                    .attr("x", 0 - 120)
+                    .attr("dy", "0.7em")
+                    .attr("opacity", 0.8)
+                    .attr("font-family", "serif")
+                    .style("text-anchor", "top")
+                    .text("Region");  
+				
+				//connecting x axis to x axis scale 
+				xAxisBarChart1 = d3.axisBottom()
+					.scale(xScaleBarChart1)
+					.ticks(4);
+								  
+				// for naming on x axis bar chart1				  
+			    svg_bar1.append("text")
+                    .attr("x", 140)
+                    .attr("y", 240)
+                    .style("text-anchor", "middle")
+                    .attr("font-family", "serif")
+                    .text("Number of Countries")
+                    .attr("opacity", 0.8);
+				
+                svg_bar1.append("g")
+                    .attr("id", "y-axis1")
+                    .attr("class", "axis");
+		
+                svg_bar1.append("g")
+                    .attr("class", "axis")
+                    .attr("id", "x-axis1")
+                    .attr("transform", "translate(0," + svg_height_bar + ")");
+				
+				/*--------------------------- Bar Chart 2 -----------------------*/
+				
+				//scaling y axis
+                yScaleBarChart2 = d3.scaleBand()
+                .range([0, svg_height_bar])
+                .paddingInner(0.3)
+                .paddingOuter(0.3);
+                
+				//scaling x axis
+                xScaleBarChart2 = d3.scaleLinear()
+                     .range([0, svg_width_bar]);
+				
+				//binding y axis to y scale 
+                yAxisBarChart2 = d3.axisLeft()
+                  .scale(yScaleBarChart2);
+
+				//Naming on yaxis bar chart 2
+				svg_bar2.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - 120)
+                    .attr("x", 0 - 140)
+                    .attr("dy", "0.7em")
+                    .attr("opacity", 0.8)
+                    .attr("font-family", "serif")
+                    .style("text-anchor", "top")
+                    .text("Government");
+				
+				//connecting x axis to x scale				
+                xAxisBarChart2 = d3.axisBottom()
+                                  .scale(xScaleBarChart2)
+                                  .ticks(4);
+								  
+				// for naming on x axis bar chart2				  
+			    svg_bar2.append("text")
+                    .attr("x", 140)
+                    .attr("y", 240)
+                    .style("text-anchor", "middle")
+                    .attr("font-family", "serif")
+                    .text("Number of Countries")
+                    .attr("opacity", 0.8);	
+	
+                svg_bar2.append("g")
+                    .attr("id", "y-axis2")
+                    .attr("class", "axis");
+
+                svg_bar2.append("g")
+                    .attr("class", "axis")
+                    .attr("id", "x-axis2")
+                    .attr("transform", "translate(0," + svg_height_bar + ")");
+                
+                //Calling Trace function when dropdown is selected
+                d3.select("#country").on("change",function(){
+                    generateTrace(d3.select(this).property('value'));
+                });    
+            }
+
+            //  function plotting trace of the country
+            function generateTrace(arg){                
+                var filtered_dataset_path;
+                if (!(arg == '' || arg == null)) {
+                    //clicked = true;
+                    filtered_dataset_path = dataset.filter(function(d) {
+                        return d.Country == arg;
+                    });
+                }
+                var circles = svg.selectAll("circle")
+                    .data(filtered_dataset_path, function key(d) {
+                        return d.Country;
+                    });
+                circles.enter()
+                    .append("circle")
+                    //.attr("class", "all_circles")
+                    .attr("cx", function(d) {
+                        return xScale(+d.GDP);
+                    })
+                    .attr("cy", function(d) {
+                        return yScale(+d.LifeExp);
+                    })
+                    .attr("r", function(d) {
+                        return rScale(+d.Population);
+                    })
+                    .attr("stroke-opacity", 0.3)
+                    .attr("fill", function(d) {
+                        return color(d.Region);
+                    })
+                    .attr("opacity", 1)
+                    .style("stroke", "black");
+                circles.exit()
+                    .style("opacity", 0.2);
+            }
+			
+			//Function for generating bar charts 
+            function generateBarCharts(arg) {
+                //variable to store number of countries of a region
+                var regionCount = {};
+				//variable to store number of countries of a region
+                var governmentCount = {};
+                filtered_dataset.forEach(function(d) {
+                    var g = d.Government;
+                    if (governmentCount[g] === undefined) {
+                        governmentCount[g] = 1;
+                    } else {
+                        governmentCount[g] = governmentCount[g] + 1;
+                    }
+                });
+                filtered_dataset.forEach(function(d) {
+                    var r = d.Region;
+                    if (regionCount[r] === undefined) {
+                        regionCount[r] = 1;
+                    } else {
+                        regionCount[r] = regionCount[r] + 1;
+                    }
+                });
+                xScaleBarChart1.domain([0, d3.max(dataset, function(d) { return regionCount[d.Region];}) ])
+                yScaleBarChart1.domain(filtered_dataset.map(function(d) { return d.Region; }));
+
+                xScaleBarChart2.domain([0, d3.max(dataset, function(d) { return governmentCount[d.Government];}) ])
+                yScaleBarChart2.domain(filtered_dataset.map(function(d) { return d.Government; }));
+				
+				//calling x and y axis of bar chart 1 to update it dynamically
+                svg_bar1.select("#x-axis1").call(xAxisBarChart1);
+                svg_bar1.select("#y-axis1").call(yAxisBarChart1);
+				
+				var bars1 = svg_bar1.selectAll("rect")
+                    .data(filtered_dataset, function key(d) {
+                        return d.Region;
+                    });
+					
+				//calling x and y axis of bar chart 2 to update it dynamically
+                svg_bar2.select("#x-axis2").call(xAxisBarChart2);
+                svg_bar2.select("#y-axis2").call(yAxisBarChart2);
+				
+                var bars2 = svg_bar2.selectAll("rect")
+                    .data(filtered_dataset, function key(d) {
+                        return d.Government;
+                    });
+               
+                bars1.attr("y", function(d, i) {
+                return yScaleBarChart1(d.Region);
+                   })
+                   .attr("x",0)
+                   .attr("width", function(d, i) {
+                        return xScaleBarChart1(regionCount[d.Region]);
+                   })
+                   .attr("height", function(d) {
+                        return yScaleBarChart1.bandwidth();
+                   })
+                   .style("fill", function(d) {
+                        return color(d.Region);
+                    });
+				
+				/*---- Enter, Update and Exit of Bar Chart 2-------*/
+                bars1.enter()
+                   .append("rect")
+                   .attr("y", function(d, i) {
+                        return yScaleBarChart1(d.Region);
+                   })
+                   .attr("x",0)
+                   .attr("width", function(d, i) {
+                        return xScaleBarChart1(regionCount[d.Region]);
+                   })
+                   .attr("height", function(d) {
+                        return yScaleBarChart1.bandwidth();
+                   })
+                   .style("fill", function(d) {
+                        return color(d.Region);
+                    });
+
+                bars1.exit().remove();
+				
+                bars2.attr("y", function(d, i) {
+                return yScaleBarChart2(d.Government);
+                   })
+                   .attr("x",0)
+                   .attr("width", function(d, i) {
+                        return xScaleBarChart2(governmentCount[d.Government]);
+                   })
+                   .attr("height", function(d) {
+                        return yScaleBarChart2.bandwidth();
+                   })
+                   .style("fill", "#2F4F4F");
+       
+				/*------ Enter, Update and Exit of Bar Chart 2-------*/
+                bars2.enter()
+                   .append("rect")
+                   .attr("y", function(d, i) {
+                        return yScaleBarChart2(d.Government);
+                   })
+                   .attr("x",0)
+                   .attr("width", function(d, i) {
+                        return xScaleBarChart2(governmentCount[d.Government]);
+                   })
+                   .attr("height", function(d) {
+                        return yScaleBarChart2.bandwidth();
+                   })
+                   .style("fill", "#2F4F4F");
+
+                bars2.exit().remove();
+                
+            }
+			
+			//Function to generate Bubble Chart
+            function generateVisualization() {
+				
+                d3.select("#country").selectAll("option")
+                    .data(d3.map(filtered_dataset, function(d){return d.Country;}).keys())
+                    .enter()
+                    .append("option")
+                    .text(function(d){return d;})
+                    .attr("value",function(d){return d;});
+                               
+                var circles = svg.selectAll("circle")
+                    .data(filtered_dataset, function key(d) {
+                        return d.Country;
+                    });
+                
+				//displaying year value according to filter
+				svg.select("#year_value")
+                    .attr("y", svg_height / 1.8)
+                    .attr("x", svg_width / 2)
+                    .style("text-anchor", "middle")
+                    .attr("class", "year")
+                    .text(display_year);
+					   
+				/*Handling Enter, Update and Exit selection of bubbles*/
+                circles.enter()
+                    .append("circle")
+                    //.attr("class", "all_circles")
+                    .attr("cx", function(d) {
+                        return xScale(+d.GDP);
+                    })
+                    .attr("cy", function(d) {
+                        return yScale(+d.LifeExp);
+                    })
+                    .attr("r", function(d) {
+                        return rScale(+d.Population);
+                    })
+                    .attr("stroke-opacity", 0.3)
+                    .attr("fill", function(d) {
+                        return color(d.Region);
+                    })
+                    .attr("opacity", 1)
+                    .style("stroke", "black")
+                    .style("opacity", 1)
+                    .on("mouseover", function(d) {
+                        mouseOn(d3.select(this));
+                    })
+                    .on("mouseout", function(d) {
+                        mouseOff(d3.select(this));
+                    })
+                    .on("click", function(d) {
+                        generateTrace(d.Country)
+                    });
+                    
+				// Exit selection of bubble
+                circles.exit()
+                    .remove();
+				
+				//Highlight the bubble when the mouse is hovered on it
+                var mouseOn = function(arg1) {
+                    //alert('mouseOn');
+                    var circle = arg1;
+                    // Transition to increase size/opacity of bubble
+                    circle.transition()
+                        .duration(500).style("opacity", 1)
+                        .attr("r", 15).ease(d3.easeLinear);
+                    circle.append("svg:title")
+                        .text(function(d) {
+                            //alert(d.Country);
+                            return d.Country;
+                        });
+                    // Append lines to bubbles that will be used to show the precise data markings.
+                    // Translate their location based on margins
+                    svg.append("g")
+                        .attr("class", "guide")
+                        .append("line")
+                        .attr("x1", circle.attr("cx") - 40)
+                        .attr("x2", circle.attr("cx") - 40)
+                        .attr("y1", circle.attr("cy") - 5)
+                        .attr("y2", svg_height - 20)
+                        .attr("transform", "translate(40,20)")
+                        .style("stroke", circle.style("fill"))
+                        .transition().delay(200).duration(400).styleTween("opacity",
+                            function() {
+                                return d3.interpolate(0, .8);
+
+                            })
+                    svg.append("g")
+                        .attr("class", "guide")
+                        .append("line")
+                        .attr("x1", circle.attr("cx") - 55)
+                        .attr("x2", 0 - margin.left - 5)
+                        .attr("y1", circle.attr("cy") - 30)
+                        .attr("y2", circle.attr("cy") - 30)
+                        .attr("transform", "translate(40,30)")
+                        .style("stroke", circle.style("fill"))
+                        .transition().delay(200).duration(400).styleTween("opacity",
+                            function() {
+                                return d3.interpolate(0, .8);
+                            });
+                    // function to move mouseover item to front of SVG stage, in case
+                    // another bubble overlaps it
+                    d3.selection.prototype.moveToFront = function() {
+                        return this.each(function() {
+                            this.parentNode.appendChild(this);
+                        });
+                    };
+                };
+				
+				//Bring back to normal state when the mouse is hovered off
+                var mouseOff = function(arg1) {
+                    //alert('mouseOff');
+                    var circle = arg1;
+                    // go back to original size and opacity
+
+                    circle.transition()
+                        .duration(500)
+                        .ease(d3.easeLinear);
+                    // fade out guide lines, then remove them
+                    d3.selectAll(".guide").transition()
+                        .duration(50).styleTween("opacity", function() {
+                            return d3.interpolate(.8, 0);
+                            //akshay
+                        })
+                        .remove();
+                    generateVisualization();
+                };
+                
+				//defining bubble transition
+				circles.transition()
+                    .duration(500)
+                    .ease(d3.easeLinear)
+                    .attr("cx", function(d) {
+                        return xScale(+d.GDP);
+                    })
+                    .attr("cy", function(d) {
+                        return yScale(+d.LifeExp);
+                    })
+                    .attr("r", function(d) {
+                        return rScale(+d.Population);
+                    })
+                    .style("stroke", "black")
+                    .style("stroke-width", 1)
+                    .style("opacity", 1)
+                    .style("stroke-opacity", 0.3)
+                    .attr("fill", function(d) {
+                        return color(d.Region);
+					});                
+            }
+			
+			//Loading file data
+            d3.csv("./data/Gapminder_All_Time.csv", function(error, data) {
+                // handle any data loading errors
+                if (error) {
+                    //alert();
+                    console.log("Something went wrong");
+                } else {
+                    console.log("Data Loaded");
+
+                    // Assign  the data object loaded to the global dataset variable
+                    dataset = data;
+
+                    initialiseGlobalVariables();
+                    filtered_dataset = dataset.filter(yearFilter);
+					filtered_dataset = filtered_dataset.filter(regionFilter);
+                    generateVisualization();
+                    generateBarCharts();
+                }
+            });
+			
+			//change the visualization according to slider value selected
+            var slider = d3.select('#year');
+            slider.on('change', function() {
+                display_year = this.value;
+                filtered_dataset = dataset.filter(yearFilter);
+				filtered_dataset = filtered_dataset.filter(regionFilter);
+				d3.select("#play-button").text("Play")
+                generateVisualization();
+                generateBarCharts();
+                clearInterval(timer);
+            });
+			
+			//display all regions when the reset button is clicked
+			d3.select("#reset-button")
+                .on("click", function() {
+				regionSelect = '';
+				
+				filtered_dataset = dataset.filter(yearFilter);
+				filtered_dataset = filtered_dataset.filter(regionFilter);
+				generateVisualization();
+                generateBarCharts();
+				
+			});
+			
+			// handle play and pause on click of play button 
+            d3.select("#play-button")
+                .on("click", function() {
+                    var button = d3.select(this).style("fill", "red");
+                    if (button.text() == "Pause") {
+                        moving = false;
+                        clearInterval(timer);
+                        // timer = 0;
+                        button.text("Play");
+                    } else {
+                        //alert('inside onclick');
+                        moving = true;
+                        timer = setInterval(function() {
+                            //alert();
+                            if (display_year < 1950) {
+                                for (var i = display_year % 10; i < 10; i++) {
+                                    display_year++;
+                                }
+                            } else {
+                                display_year++;
+                            }
+                            if (display_year > 2015) {
+                                display_year = 1900;
+                            }
+
+                            filtered_dataset = dataset.filter(yearFilter);
+							filtered_dataset = filtered_dataset.filter(regionFilter);
+                            //document.getElementById("selected_year").value = display_year;
+                            document.getElementById("year").value = display_year;
+                            //document.getElementById("year_value").value = display_year;
+                            generateVisualization();
+                            generateBarCharts();
+                        }, 450);
+                        button.text("Pause");
+                    }
+                });
+        </script>
+    </div>
+</body>
